@@ -78,5 +78,6 @@ export default {
   methods: {
     ...mapMutations(["agregarPizza"]),
   },
+  created() {},
 };
 </script>

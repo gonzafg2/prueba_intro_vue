@@ -31,6 +31,9 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/ventas">Ventas</router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/crear">Crear Pizzas</router-link>
+          </li>
         </ul>
       </div>
 

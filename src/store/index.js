@@ -2,6 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 
+import { db } from "../../firebase";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -83,6 +85,26 @@ export default new Vuex.Store({
         });
       }
     },
+    guardarPizzasEnDB(state) {
+      setTimeout(() => {
+        try {
+          const productos = state.productos;
+          console.log(productos);
+          productos.forEach(async (producto) => {
+            await db.collection("pizzas").add(producto);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }, 2000);
+    },
+    agregarNuevaPizza(state, payload) {
+      // Qué pasaría si el ID existe?
+      // Validar que el ID no exista:
+      const existe = state.productos.find((pizza) => pizza.id === payload.id);
+      // Si no existe ingresar a la base de datos.
+      if (!existe) state.productos.push(payload);
+    },
   },
   actions: {
     async getData({ commit }) {
@@ -100,5 +122,56 @@ export default new Vuex.Store({
         console.log(error);
       }
     },
+    // async setDataPizzasDB({ commit }) {
+    //   commit("guardarPizzasEnDB");
+    // },
+    async crearNuevaPizza({ commit }, payload) {
+      const pizza = payload;
+      if (!pizza) return;
+
+      // Actualizar el state
+      commit("agregarNuevaPizza", pizza);
+      // Actualizar Firebase
+      // Preguntar si el ID existe en Firebase: (TAREA)
+      // try {
+      //   const req = await db.collection("pizza").get();
+      //   req.docs.forEach(obj => {
+      //     const pizzaFirebase = obj.data();
+      //     const idFirebase = pizzaFirebase.id;
+
+      //     // Tiene un problema: ¿Cuál es? (Tarea)
+      //     if (idFirebase === pizza.id) return;
+      //     await db.collection("pizzas").add(pizza);
+      //   })
+      // } catch (error) {
+      //   console.log(error);
+      // }
+      await db.collection("pizzas").add(pizza);
+    },
+    async borrarPizzas({ commit }, payload) {
+      commit("");
+      console.log(payload);
+      // Delete en Firestore
+      await db.collection("pizzas").doc("").delete();
+    }
   },
 });
+
+// Agregar las pizzas nuevas a la BD.
+// Tres instancias: 1. API. 2. Firebase. 3. Vuex
+
+
+// Orden para el Desafío:
+/**
+ * 1. Traer la data de la API.
+ * 2. Guardar solo una vez la data de la API en Firebase (Preocuparse de solo cargarla una vez. Puede hacer validaciones si quiere.)
+ * 2.5. Hacer un get de la data de Firebase para obtenerla. (Si quiere puede guardarla en el arreglo Productos o crear otra variable). (Con el fin de obtener los ID's de las pizzas en Firebase)
+ * 3. Crear una interfaz (formulario) para crear nuevas pizzas.
+ * 3.1. Añadir Ingredientes e Imagen (Puede ser cualquier imagen).
+ * 3.2. Validaciones:
+ * 3.2.1. Que el ID no exista previamente tanto en Vuex (state) como en Firebase.
+ * 4. Añadir a la tabla inventario un botón de eliminar pizza (Todo el registro)
+ * 4.1. Pasarle el ID de Firebase para eliminar el documento.
+ * 4.2. Debe validar que la pizza exista previamente.
+ * 5. Opcional: Actualización del stock de la pizza.
+ */

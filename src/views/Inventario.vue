@@ -15,6 +15,7 @@
               <th scope="col">Nombre</th>
               <th scope="col">Precio</th>
               <th scope="col">Stock</th>
+              <th scope="col">Acciones</th>
             </tr>
           </thead>
 
@@ -31,6 +32,14 @@
               <td>{{ producto.name }}</td>
               <td>{{ producto.price }}</td>
               <td>{{ producto.stock }}</td>
+              <td>
+                <button
+                  @click="borrarPizza(producto.id)"
+                  class="btn btn-danger"
+                >
+                  Borrar Registro
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -40,12 +49,18 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "Inventario",
   computed: {
     ...mapState(["productos"]),
+  },
+  methods: {
+    ...mapActions(["borrarPizzas"]),
+    borrarPizza(id) {
+      this.borrarPizzas(id);
+    },
   },
 };
 </script>
